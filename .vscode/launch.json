@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Iniciar Spring Boot (CrudApplication)",
+      "request": "launch",
+      "mainClass": "br.com.nexum.CrudApplication",
+      "projectName": "nexum"
+    }
+  ]
+}
