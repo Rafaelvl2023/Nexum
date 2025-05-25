@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Tarefas</title></head>
+<body>
+<h1>Tarefas Baixa</h1>
+<div th:each="tarefa : ${tarefasBaixa}">
+    <p>ID: <span th:text="${tarefa.id}">ID</span></p>
+    <p>Título: <span th:text="${tarefa.titulo}">Título</span></p>
+    <hr>
+</div>
+</body>
+</html>

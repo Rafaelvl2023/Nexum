@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sidebar + Content</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
+
+    body {
+        overflow-x: hidden;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    #viewport {
+        display: flex;
+        height: 100vh;
+    }
+
+    #sidebar {
+        width: 250px;
+        background: #37474F;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+
+    #content {
+        flex: 1;
+        background: #f8f9fa;
+        position: relative;
+    }
+
+    nav.navbar {
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+    }
+
+    nav.navbar ul {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav.navbar ul li {
+        margin-left: 20px;
+    }
+
+    nav.navbar ul li a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    nav.navbar ul li a i {
+        font-size: 20px;
+        margin-right: 5px;
+        color: #e74c3c;
+    }
+
+    .container-fluid {
+        padding: 20px 30px;
+    }
+
+    #sidebar header {
+        background-color: #263238;
+        font-size: 20px;
+        line-height: 52px;
+        text-align: center;
+        color: #fff;
+    }
+
+    #sidebar .nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column; 
+    }
+
+    #sidebar .nav li {
+        width: 100%;
+        border-bottom: 1px solid #455A64;
+    }
+
+    #sidebar .nav a {
+        color: #CFD8DC;
+        font-size: 14px;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        width: 100%; 
+    }
+
+    #sidebar .nav a i {
+        margin-right: 16px;
+    }
+
+    #sidebar .nav a:hover {
+        color: #ECEFF1;
+    }
+
+    #toggleSidebarBtn {
+        background: transparent;
+        border: none;
+        font-size: 28px;
+        color: #333;
+        display: none;
+        cursor: pointer;
+    }
+
+    .input-shadow {
+        background-color: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.432);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .input-shadow:focus {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.479);
+        outline: none;
+    }
+
+    .rounded-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .table-responsive {
+        border-radius: 0.25rem;
+        overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+        #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100%;
+        transform: translateX(-100%);
+        }
+
+        #sidebar.open {
+        transform: translateX(0);
+        }
+
+        #content {
+        flex: 1;
+        }
+
+        #toggleSidebarBtn {
+        display: block;
+        z-index: 1200;
+        }
+
+        #viewport {
+        flex-direction: column;
+        }
+
+        #sidebar .nav {
+        flex-direction: column;
+        }
+
+        #sidebar .nav li,
+        #sidebar .nav a {
+        width: 100%;
+        }
+    }
+  </style>
+  <style>
+    .title-priorities {
+      font-size: 1rem;
+      background: #2e2e2e;
+      margin-bottom: 10px;
+      color: #ffffff;
+      padding: 15px;
+    }
+
+    .kanban-column {
+      background: #ffffff;
+      border-radius: 5px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .kanban-column h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: #555;
+      border-bottom: 5px solid #ffffff;
+      padding-bottom: 5px;
+    }
+
+    .kanban-items {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 10px;
+      padding: 5px;
+      border-radius: 2px;
+      background: #f9f9f9;
+      max-height: 690px;
+    }
+
+    #baixo,
+    #medio,
+    #alto {
+      border: 2px solid rgb(140, 140, 140);
+    }
+
+    #baixo {
+      background-color: #b2f2bb;
+    }
+
+    #medio {
+      background-color: #ffe066;
+    }
+
+    #alto {
+      background-color: #fa5252e0;
+    }
+
+    .card {
+      background: #e3f2fd;
+      border: 1px solid #e0e0e0;
+      border-radius: 2px;
+      padding: 12px;
+      margin: 8px 0;
+      cursor: grab;
+      text-align: left;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #2e2e2e;
+    }
+
+    .card-description {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    .card-date {
+      font-size: 0.85rem;
+      color: #777;
+      text-align: right;
+    }
+
+    .close-icon .material-icons{
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      color: rgb(0, 184, 190);
+      font-size: 24px;
+      z-index: 10;
+    }
+  </style>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="viewport">
+    <div id="sidebar">
+      <header>Task Flow</header>
+      <ul class="nav">
+        <li><a href="/"><i class="mdi mdi-view-dashboard"></i> Gerenciar Tarefas</a></li>
+        <li><a href="fluxoTarefas"><i class="mdi mdi-widgets"></i> Fluxo de Trabalho</a></li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <nav class="navbar">
+        <button id="toggleSidebarBtn" class="mdi mdi-menu"></button>
+        <ul>
+          <li><img src="https://nexum.com.br/wp-content/uploads/2023/08/logotipo-nexum-solucoes-que-geram-valor.jpg" alt="" style="width: 150px; height: auto;"></li>
+        </ul>
+      </nav>
+      <div class="container-fluid">
+
+        <h1 class="title-priorities">📋 Ordem de Prioridades</h1>
+  
+        <!-- Kanban -->
+        <div>
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="kanban-column" id="baixo">
+                <h2>Prioridade Baixa</h2>
+                <div class="kanban-items">
+                  <div class="card position-relative" th:each="tarefa : ${tarefasBaixa}" draggable="true"
+                      th:attr="data-id=${tarefa.id != null ? tarefa.id.toString() : '0'}">
+
+                    <form th:action="@{/tarefa/fluxo/excluir/{id}(id=${tarefa.id})}" method="post">
+                      <button type="submit" class="close-icon btn btn-link p-0 m-0">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    </form>
+
+                    <div class="card-title" th:text="${tarefa.titulo != null ? tarefa.titulo : 'Sem título'}"></div>
+                    <div class="card-description" th:text="${tarefa.descricao != null ? tarefa.descricao : 'Sem descrição'}"></div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="kanban-column" id="medio">
+                <h2>Prioridade Média</h2>
+                <div class="kanban-items">
+                  <div class="card" th:each="tarefa : ${tarefasMedia}" draggable="true"
+                      th:attr="data-id=${tarefa.id != null ? tarefa.id.toString() : '0'}">
+
+                    <form th:action="@{/tarefa/fluxo/excluir/{id}(id=${tarefa.id})}" method="post">
+                      <button type="submit" class="close-icon btn btn-link p-0 m-0">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    </form>
+
+                    <div class="card-title" th:text="${tarefa.titulo != null ? tarefa.titulo : 'Sem título'}"></div>
+                    <div class="card-description" th:text="${tarefa.descricao != null ? tarefa.descricao : 'Sem descrição'}"></div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-md-12 col-sm-12">
+              <div class="kanban-column" id="alto">
+                <h2>Prioridade Alta</h2>
+                <div class="kanban-items">
+                  <div class="card" th:each="tarefa : ${tarefasAlta}" draggable="true"
+                      th:attr="data-id=${tarefa.id != null ? tarefa.id.toString() : '0'}">
+
+                    <form th:action="@{/tarefa/fluxo/excluir/{id}(id=${tarefa.id})}" method="post">
+                      <button type="submit" class="close-icon btn btn-link p-0 m-0">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    </form>
+
+                    <div class="card-title" th:text="${tarefa.titulo != null ? tarefa.titulo : 'Sem título'}"></div>
+                    <div class="card-description" th:text="${tarefa.descricao != null ? tarefa.descricao : 'Sem descrição'}"></div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    let draggedCard = null;
+
+    function addDragEvents(card) {
+      card.addEventListener("dragstart", e => {
+        draggedCard = card;
+        setTimeout(() => {
+          card.style.display = "none";
+        }, 0);
+      });
+
+      card.addEventListener("dragend", e => {
+        card.style.display = "block";
+        draggedCard = null;
+      });
+    }
+
+    document.querySelectorAll(".card").forEach(addDragEvents);
+
+    document.querySelectorAll(".kanban-items").forEach(area => {
+      area.addEventListener("dragover", e => e.preventDefault());
+
+      area.addEventListener("drop", async e => {
+        e.preventDefault();
+        if (draggedCard) {
+          area.appendChild(draggedCard);
+
+          const cardId = draggedCard.getAttribute("data-id");
+          let novaPrioridade = area.closest(".kanban-column").id;
+
+          const prioridadeMap = {
+            'baixo': 'BAIXA',
+            'medio': 'MEDIA',
+            'alto': 'ALTA'
+          };
+          novaPrioridade = prioridadeMap[novaPrioridade] || 'BAIXA';
+
+          try {
+            const response = await fetch(`/prioridade/editar/${cardId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prioridade: novaPrioridade })
+            });
+
+            const result = await response.text();
+
+            if (!response.ok) {
+              alert('Erro ao atualizar: ' + (result.message || response.status));
+            }
+          } catch (error) {
+            alert('Erro na comunicação: ' + error.message);
+          }
+        }
+      });
+    });
+  </script>
+  <script>
+    const toggleBtn = document.getElementById("toggleSidebarBtn");
+    const sidebar = document.getElementById("sidebar");
+
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+  </script>
+</body>
+</html>

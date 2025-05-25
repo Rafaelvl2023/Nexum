@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Task Flow</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
+
+    body {
+        overflow-x: hidden;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    #viewport {
+        display: flex;
+        height: 100vh;
+    }
+
+    #sidebar {
+        width: 250px;
+        background: #37474F;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+
+    #content {
+        flex: 1;
+        background: #f8f9fa;
+        position: relative;
+    }
+
+    nav.navbar {
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+    }
+
+    nav.navbar ul {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav.navbar ul li {
+        margin-left: 20px;
+    }
+
+    nav.navbar ul li a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    nav.navbar ul li a i {
+        font-size: 20px;
+        margin-right: 5px;
+        color: #e74c3c;
+    }
+
+    .container-fluid {
+        padding: 20px 30px;
+    }
+
+    #sidebar header {
+        background-color: #263238;
+        font-size: 20px;
+        line-height: 52px;
+        text-align: center;
+        color: #fff;
+    }
+
+    #sidebar .nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column; 
+    }
+
+    #sidebar .nav li {
+        width: 100%;
+        border-bottom: 1px solid #455A64;
+    }
+
+    #sidebar .nav a {
+        color: #CFD8DC;
+        font-size: 14px;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        width: 100%; 
+    }
+
+    #sidebar .nav a i {
+        margin-right: 16px;
+    }
+
+    #sidebar .nav a:hover {
+        color: #ECEFF1;
+    }
+
+    #toggleSidebarBtn {
+        background: transparent;
+        border: none;
+        font-size: 28px;
+        color: #333;
+        display: none;
+        cursor: pointer;
+    }
+
+    .input-shadow {
+        background-color: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.432);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .input-shadow:focus {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.479);
+        outline: none;
+    }
+
+    .rounded-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .table-responsive {
+        border-radius: 0.25rem;
+        overflow: hidden;
+    }
+
+    .form {
+        background: linear-gradient(to bottom, #e6e6e6, #ffffff, #e6e6e6);
+    }
+
+    @media (max-width: 768px) {
+        #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100%;
+        transform: translateX(-100%);
+        }
+
+        #sidebar.open {
+        transform: translateX(0);
+        }
+
+        #content {
+        flex: 1;
+        }
+
+        #toggleSidebarBtn {
+        display: block;
+        z-index: 1200;
+        }
+
+        #viewport {
+        flex-direction: column;
+        }
+
+        #sidebar .nav {
+        flex-direction: column;
+        }
+
+        #sidebar .nav li,
+        #sidebar .nav a {
+        width: 100%;
+        }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div id="viewport">
+    <div id="sidebar">
+      <header>Task Flow</header>
+      <ul class="nav">
+        <li><a href="/"><i class="mdi mdi-view-dashboard"></i> Gerenciar Tarefas</a></li>
+        <li><a href="fluxoTarefas"><i class="mdi mdi-widgets"></i> Fluxo de Trabalho</a></li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <nav class="navbar">
+        <button id="toggleSidebarBtn" class="mdi mdi-menu"></button>
+        <ul>
+          <li><img src="https://nexum.com.br/wp-content/uploads/2023/08/logotipo-nexum-solucoes-que-geram-valor.jpg" alt="" style="width: 150px; height: auto;"></li>
+        </ul>
+      </nav>
+      <div>
+        <div class="container text-center">
+            <h5 class="mt-2 mb-2">Cadastrar Tarefas</h5>
+        </div>
+        <div class="col-md-12 d-flex flex-column flex-md-row">
+            <!-- Formulário de cadastro -->
+            <form action="/cadastrarTarefa" method="POST" class="form col-md-9 p-2 border">
+                <div class="form-row">
+                    <div class="form-group col-md-6 p-1">
+                        <label for="titulo">Título</label>
+                        <input type="text" class="form-control form-control-sm" id="titulo" name="titulo" required>
+                    </div>
+
+                    <div class="form-group col-md-2 p-1">
+                        <label for="dataConclusao">Data de Conclusão</label>
+                        <input type="date" class="form-control form-control-sm" id="dataConclusao" name="dataConclusao" required>
+                    </div>
+
+                    <div class="form-group col-md-2 p-1">
+                        <label for="prioridade">Prioridade</label>
+                        <select class="form-control form-control-sm" id="prioridade" name="prioridade" required>
+                            <option disabled selected>Selecione uma opção:</option>
+                            <option value="BAIXA">Baixa</option>
+                            <option value="MEDIA">Média</option>
+                            <option value="ALTA">Alta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-2 p-1">
+                        <label for="usuarioId">Usuário</label>
+                        <select class="form-control form-control-sm" id="usuarioId" name="usuarioId">
+                            <option disabled selected>Selecione uma opção:</option>
+                            <option value="1">Rafael Teixeira</option>
+                            <option value="2">Luciana Regina</option>
+                            <option value="3">Vanderlei Teixeira</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row align-items-center">
+                    <div class="form-group col-md-6 p-1">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="lembreteAtivado" name="lembreteAtivado" value="true" onchange="toggleHorarioLembrete()">
+                            <label class="form-check-label small" for="lembreteAtivado">Ativar Lembrete</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-6 p-1" id="horario_lembrete_container" style="display: none;">
+                        <label for="horarioLembrete">Horário do Lembrete</label>
+                        <input type="datetime-local" class="form-control form-control-sm" id="horarioLembrete" name="horarioLembrete">
+                    </div>
+                </div>
+
+                <div class="form-group p-1">
+                    <label for="descricao">Descrição</label>
+                    <textarea class="form-control form-control-sm" id="descricao" name="descricao" rows="3"></textarea>
+                </div>
+
+                <div class="text-right pb-1">
+                    <button type="submit" class="btn btn-sm btn-info py-1 px-3 mt-2">Cadastrar</button>
+                </div>
+            </form>
+
+            <!-- Lembretes -->
+            <div class="col-md-3 p-0 px-3 border bg-dark text-white rounded shadow-sm">
+                <h5 class="p-2 mb-0 border-bottom border-secondary d-flex justify-content-between align-items-center">
+                    🗓️ 10 Tarefas mais próximas
+                    <i>
+                        <img src="https://cdn-icons-png.freepik.com/256/3287/3287521.png?uid=R81172538&ga=GA1.1.487095378.1743434307&semt=ais_hybrid" alt="" style="width:28px; height:28px;">
+                    </i>
+                </h5>
+                <table class="table table-sm table-dark table-hover mb-0">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li th:each="tarefa : ${lembretes}">
+                                        <span th:text="${tarefa.titulo}">Título da Tarefa</span>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+        </div>
+        <!-- Filtros -->
+        <div class="col-md-12 mt-3 mb-3 d-flex justify-content-end" style="gap: 1rem;">
+            <form method="get" class="form-inline align-items-end" style="gap: 1rem;">
+                <select name="prioridade" class="form-control form-control-sm rounded-pill border-0 px-3 input-shadow">
+                    <option value="">Todas Prioridades</option>
+                    <option value="BAIXA" th:selected="${filtroPrioridade == 'BAIXA'}">Baixa</option>
+                    <option value="MEDIA" th:selected="${filtroPrioridade == 'MEDIA'}">Média</option>
+                    <option value="ALTA" th:selected="${filtroPrioridade == 'ALTA'}">Alta</option>
+                </select>
+
+                <select name="lembrete" class="form-control form-control-sm rounded-pill border-0 px-3 input-shadow">
+                    <option value="">Todos Lembretes</option>
+                    <option value="true" th:selected="${filtroLembrete == true}">Ativado</option>
+                    <option value="false" th:selected="${filtroLembrete == false}">Desativado</option>
+                </select>
+
+                <div class="d-flex ms-auto" style="gap: 0.6rem;">
+                    <button type="submit" class="btn btn-outline-info btn-sm rounded-circle shadow-sm" title="Filtrar">
+                        <i class="fas fa-search"></i>
+                    </button>
+
+                    <a href="/" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm" title="Limpar filtros">
+                        <i class="fas fa-sync-alt"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Container da tabela (desktop) -->
+        <div class="col-md-12">
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover rounded-table shadow-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Data de Conclusão</th>
+                                <th>Prioridade</th>
+                                <th>Usuário</th>
+                                <th>Lembrete</th>
+                                <th>Horário</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="tarefa : ${tarefas}">
+                                <td th:text="${tarefa.id}"></td>
+                                <td th:text="${tarefa.titulo}"></td>
+                                <td th:text="${tarefa.descricao}"></td>
+                                <td th:text="${tarefa.dataConclusao != null ? tarefa.dataConclusao.toString() : '-'}"></td>
+                                <td th:text="${tarefa.prioridade}"></td>
+                                <td th:text="${tarefa.usuarioId != null ? tarefa.usuarioId.toString() : 'Nenhum'}"></td>
+                                <td th:text="${tarefa.lembreteAtivado != null ? (tarefa.lembreteAtivado ? 'Sim' : 'Não') : 'Não'}"></td>
+                                <td th:text="${tarefa.horarioLembrete != null ? tarefa.horarioLembrete.toString() : '-'}"></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white" data-toggle="modal" th:data-target="'#editarModal-' + ${tarefa.id}" title="Editar">
+                                        <i class="fas fa-pen-to-square"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-dark text-white" data-toggle="modal" th:data-target="'#excluirModal-' + ${tarefa.id}" title="Excluir">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Paginação -->
+            <nav aria-label="Navegação de páginas">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link bg-info text-white border-info"
+                        th:href="@{/(page=${currentPage - 1}, prioridade=${filtroPrioridade}, lembrete=${filtroLembrete})}" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                        <a class="page-link"
+                        th:href="@{/(page=${i}, prioridade=${filtroPrioridade}, lembrete=${filtroLembrete})}"
+                        th:classappend="${i == currentPage} ? ' bg-dark text-white border-dark' : ' bg-white text-info border-info'"
+                        th:text="${i + 1}">
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link bg-info text-white border-info"
+                        th:href="@{/(page=${currentPage + 1}, prioridade=${filtroPrioridade}, lembrete=${filtroLembrete})}" aria-label="Próximo">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Cards para mobile -->
+        <div class="col-md-12">
+            <div class="d-block d-md-none">
+                <div class="card mb-2" th:each="tarefa : ${tarefas}">
+                    <div class="card-body p-2">
+                        <h5 class="card-title" th:text="${tarefa.titulo}"></h5>
+                        <p class="card-text mb-1" th:text="${tarefa.descricao}"></p>
+                        <p class="mb-1 small">
+                            <b>ID:</b> <span th:text="${tarefa.id}"></span><br>
+                            <b>Data:</b> <span th:text="${tarefa.dataConclusao != null ? tarefa.dataConclusao.toString() : '-'}"></span><br>
+                            <b>Prioridade:</b> <span th:text="${tarefa.prioridade}"></span><br>
+                            <b>Usuário:</b> <span th:text="${tarefa.usuarioId != null ? tarefa.usuarioId.toString() : 'Nenhum'}"></span><br>
+                            <b>Lembrete:</b> <span th:text="${tarefa.lembreteAtivado != null ? (tarefa.lembreteAtivado ? 'Sim' : 'Não') : 'Não'}"></span><br>
+                            <b>Horário:</b> <span th:text="${tarefa.horarioLembrete != null ? tarefa.horarioLembrete.toString() : '-'}"></span>
+                        </p>
+                        <button class="btn btn-sm btn-primary mr-1" data-toggle="modal" th:data-target="'#editarModal-' + ${tarefa.id}">Editar</button>
+                        <button class="btn btn-sm btn-danger" data-toggle="modal" th:data-target="'#excluirModal-' + ${tarefa.id}">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modais de edição -->
+        <div th:each="tarefa : ${tarefas}">
+            <div class="modal fade" th:id="'editarModal-' + ${tarefa.id}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <form th:action="@{/tarefas/editar/{id}(id=${tarefa.id})}" method="post">
+                            <div class="modal-header py-2 px-3">
+                                <h5 class="modal-title mb-0">Editar Tarefa</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body px-3 py-2">
+
+                                <div class="form-group mb-2">
+                                    <label for="titulo" class="small">Título</label>
+                                    <input type="text" class="form-control form-control-sm" name="titulo" th:value="${tarefa.titulo}" required>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="descricao" class="small">Descrição</label>
+                                    <textarea class="form-control form-control-sm" name="descricao" rows="2" required
+                                        th:text="${tarefa.descricao}"></textarea>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="dataConclusao" class="small">Data de Conclusão</label>
+                                    <input type="date" class="form-control form-control-sm" name="dataConclusao" th:value="${tarefa.dataConclusao}">
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="prioridade" class="small">Prioridade</label>
+                                    <select class="form-control form-control-sm" name="prioridade" required>
+                                        <option disabled th:selected="${tarefa.prioridade == null}">Selecione uma opção:</option>
+                                        <option value="BAIXA" th:selected="${tarefa.prioridade == 'BAIXA'}">Baixa</option>
+                                        <option value="MEDIA" th:selected="${tarefa.prioridade == 'MEDIA'}">Média</option>
+                                        <option value="ALTA" th:selected="${tarefa.prioridade == 'ALTA'}">Alta</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="usuarioId" class="small">Usuário</label>
+                                    <select class="form-control form-control-sm" id="usuarioId" name="usuarioId" required>
+                                        <option disabled>Selecione uma opção:</option>
+                                        <option value="1" th:selected="${tarefa.usuarioId == 1}">Rafael Teixeira</option>
+                                        <option value="2" th:selected="${tarefa.usuarioId == 2}">Luciana Regina</option>
+                                        <option value="3" th:selected="${tarefa.usuarioId == 3}">Vanderlei Teixeira</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="lembreteAtivado" class="small">Lembrete Ativado</label>
+                                    <select class="form-control form-control-sm" name="lembreteAtivado" required>
+                                        <option value="true" th:selected="${tarefa.lembreteAtivado}">Sim</option>
+                                        <option value="false" th:selected="${!tarefa.lembreteAtivado}">Não</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer py-2 px-3">
+                                <button type="submit" class="btn btn-info btn-sm px-3">Salvar</button>
+                                <button type="button" class="btn btn-secondary btn-sm px-3" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modais de exclusão -->
+        <div th:each="tarefa : ${tarefas}">
+            <div class="modal fade" th:id="'excluirModal-' + ${tarefa.id}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                    <div class="modal-content border-secondary shadow-sm">
+                        <form th:action="@{/tarefas/excluir/{id}(id=${tarefa.id})}" method="post">
+                            <div class="modal-header bg-light text-dark py-2 px-3">
+                                <h5 class="modal-title mb-0">Excluir tarefa?</h5>
+                                <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Fechar">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body py-4 px-4 text-center">
+                                <p class="mb-0">Tem certeza que deseja excluir:</p>
+                                <strong th:text="${tarefa.titulo}" class="d-block mt-2"></strong>
+                            </div>
+                            <div class="modal-footer justify-content-center py-2 px-3">
+                                <button type="submit" class="btn btn-info btn-sm px-4">Sim</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm px-4" data-dismiss="modal">Não</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    const toggleBtn = document.getElementById("toggleSidebarBtn");
+    const sidebar = document.getElementById("sidebar");
+
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+  </script>
+  <script>
+        function toggleHorarioLembrete() {
+            const checkbox = document.getElementById('lembreteAtivado');
+            const horarioContainer = document.getElementById('horario_lembrete_container');
+            horarioContainer.style.display = checkbox.checked ? 'block' : 'none';
+        }
+  </script>
+</body>
+</html>
